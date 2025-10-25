@@ -51,7 +51,7 @@ function installClineDependencies() {
 function buildProtoFiles() {
   log('Building proto files...');
   try {
-    execSync('npm run build:proto', { 
+    execSync('npm run protos', { 
       cwd: CLINE_DIR,
       stdio: 'inherit'
     });
@@ -98,6 +98,69 @@ function copyGeneratedClients() {
   log('Generated clients copied successfully');
 }
 
+/**
+ * WORKAROUND: Export MessageFns from common.ts files
+ * This fixes TypeScript compilation errors caused by duplicate MessageFns interfaces
+ * in generated proto files that aren't properly exported
+ */
+function exportMessageFnsFromCommonFiles() {
+  log('Exporting MessageFns from common.ts files...');
+  
+  const generatedDir = path.join(GRPC_CLIENT_DIR, 'src/generated');
+  const commonFiles = findCommonFiles(generatedDir);
+  
+  for (const file of commonFiles) {
+    addExportToMessageFns(file);
+  }
+  
+  log('MessageFns exports added to common.ts files');
+}
+
+/**
+ * Find all common.ts files in the generated directory
+ */
+function findCommonFiles(dir) {
+  const commonFiles = [];
+  
+  function walk(currentDir) {
+    const files = fs.readdirSync(currentDir);
+    
+    for (const file of files) {
+      const filePath = path.join(currentDir, file);
+      const stat = fs.statSync(filePath);
+      
+      if (stat.isDirectory()) {
+        walk(filePath);
+      } else if (file === 'common.ts') {
+        commonFiles.push(filePath);
+      }
+    }
+  }
+  
+  walk(dir);
+  return commonFiles;
+}
+
+/**
+ * WORKAROUND: Add export to MessageFns interface in common.ts files
+ * This is needed because generated proto files have duplicate MessageFns interfaces
+ * that aren't properly exported, causing TypeScript errors
+ */
+function addExportToMessageFns(filePath) {
+  let content = fs.readFileSync(filePath, 'utf8');
+  
+  // WORKAROUND: Add export to MessageFns interface to fix TypeScript compilation
+  // This is a temporary fix until proto generation is improved
+  content = content.replace(
+    /interface MessageFns<T> {/g,
+    '// WORKAROUND: Export MessageFns to fix TypeScript compilation\n' +
+    '// This is a temporary fix until proto generation is improved\n' +
+    'export interface MessageFns<T> {'
+  );
+  
+  fs.writeFileSync(filePath, content, 'utf8');
+}
+
 function copyDir(source, target) {
   if (!fs.existsSync(target)) {
     fs.mkdirSync(target, { recursive: true });
@@ -125,6 +188,10 @@ function main() {
     installClineDependencies();
     buildProtoFiles();
     copyGeneratedClients();
+    
+    // WORKAROUND: Export MessageFns from common.ts files
+    // This fixes TypeScript compilation errors caused by duplicate interfaces
+    exportMessageFnsFromCommonFiles();
     
     log('Proto build completed successfully!');
     log('Generated TypeScript clients are available in packages/grpc-client/src/generated/');

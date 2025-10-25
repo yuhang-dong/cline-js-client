@@ -14,7 +14,7 @@
     "lint": "pnpm -r lint",
     "proto:build": "cd cline && npm run build:proto",
     "install:all": "pnpm install && cd cline && npm install",
-    "prepare": "pnpm proto:build"
+    "prepare": "./scripts/build-proto.js"
   },
   "devDependencies": {
     "typescript": "^5.0.0",
