@@ -2,11 +2,26 @@
   "name": "cline-grpc-client-js",
   "version": "3.34.0",
   "description": "Raw gRPC clients for Cline Core instances",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "exports": {
+    "./grpc-js": {
+      "types": "./dist/generated/grpc-js/index.d.ts",
+      "import": "./dist/generated/grpc-js/index.js",
+      "require": "./dist/generated/grpc-js/index.js"
+    },
+    "./nice-grpc": {
+      "types": "./dist/generated/nice-grpc/index.d.ts",
+      "import": "./dist/generated/nice-grpc/index.js",
+      "require": "./dist/generated/nice-grpc/index.js"
+    },
+    "./proto": {
+      "types": "./dist/generated/proto/index.d.ts",
+      "import": "./dist/generated/proto/index.js",
+      "require": "./dist/generated/proto/index.js"
+    }
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
