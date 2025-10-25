@@ -5,26 +5,27 @@
   "files": [
     "dist"
   ],
+  "type": "module",
   "exports": {
     "./grpc-js": {
-      "types": "./dist/generated/grpc-js/index.d.ts",
-      "import": "./dist/generated/grpc-js/index.js",
-      "require": "./dist/generated/grpc-js/index.js"
+      "types": "./dist/grpc-js/index.d.ts",
+      "import": "./dist/grpc-js.js",
+      "require": "./dist/grpc-js.js"
     },
     "./nice-grpc": {
-      "types": "./dist/generated/nice-grpc/index.d.ts",
-      "import": "./dist/generated/nice-grpc/index.js",
-      "require": "./dist/generated/nice-grpc/index.js"
+      "types": "./dist/nice-grpc/index.d.ts",
+      "import": "./dist/nice-grpc.js",
+      "require": "./dist/nice-grpc.js"
     },
     "./proto": {
-      "types": "./dist/generated/proto/index.d.ts",
-      "import": "./dist/generated/proto/index.js",
-      "require": "./dist/generated/proto/index.js"
+      "types": "./dist/proto/index.d.ts",
+      "import": "./dist/proto.js",
+      "require": "./dist/proto.js"
     }
   },
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
+    "build": "vite build",
+    "dev": "vite build --watch",
     "clean": "rm -rf dist",
     "lint": "echo 'Linting not configured yet'",
     "test": "echo 'Testing not configured yet'"
@@ -37,7 +38,9 @@
   },
   "devDependencies": {
     "typescript": "^5.0.0",
-    "@types/node": "^20.0.0"
+    "@types/node": "^20.0.0",
+    "vite": "^5.0.0",
+    "vite-plugin-dts": "^3.9.1"
   },
   "keywords": [
     "cline",
