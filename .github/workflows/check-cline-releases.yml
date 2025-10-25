@@ -1,0 +1,79 @@
+name: Check Cline Releases
+
+on:
+  schedule:
+    - cron: '0 12 * * *'  # Daily at 12:00 UTC
+  workflow_dispatch:       # Manual trigger
+
+jobs:
+  check-releases:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository with submodules
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          submodules: recursive
+          fetch-depth: 0  # Get all history for tags
+
+      - name: Get current package version
+        id: current-version
+        run: echo "CURRENT_VERSION=$(node -p "require('./packages/grpc-client/package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Fetch latest tags from Cline submodule
+        run: |
+          cd cline
+          git fetch --tags
+
+      - name: Get latest Cline tag from submodule
+        id: latest-tag
+        run: |
+          cd cline
+          LATEST_TAG=$(git describe --tags --abbrev=0)
+          echo "LATEST_TAG=${LATEST_TAG#v}" >> $GITHUB_OUTPUT  # Remove 'v' prefix
+
+      - name: Compare versions
+        id: version-check
+        run: |
+          CURRENT=${{ steps.current-version.outputs.CURRENT_VERSION }}
+          LATEST=${{ steps.latest-tag.outputs.LATEST_TAG }}
+          echo "Current: $CURRENT, Latest: $LATEST"
+          if [[ "$CURRENT" < "$LATEST" ]]; then
+            echo "UPDATE_NEEDED=true" >> $GITHUB_OUTPUT
+            echo "NEW_VERSION=$LATEST" >> $GITHUB_OUTPUT
+          else
+            echo "UPDATE_NEEDED=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update submodule to latest tag
+        if: steps.version-check.outputs.UPDATE_NEEDED == 'true'
+        run: |
+          cd cline
+          git checkout ${{ steps.latest-tag.outputs.LATEST_TAG }}
+          cd ..
+          git add cline
+
+      - name: Update package.json and build
+        if: steps.version-check.outputs.UPDATE_NEEDED == 'true'
+        run: |
+          cd packages/grpc-client
+          npm version ${{ steps.version-check.outputs.NEW_VERSION }} --no-git-tag-version
+          npm run build
+          cd ../..
+          git add packages/grpc-client/package.json packages/grpc-client/dist
+
+      - name: Create Pull Request
+        if: steps.version-check.outputs.UPDATE_NEEDED == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore: update to Cline v${{ steps.version-check.outputs.NEW_VERSION }}"
+          title: "Update to Cline v${{ steps.version-check.outputs.NEW_VERSION }}"
+          body: |
+            Automated update to sync with Cline release v${{ steps.version-check.outputs.NEW_VERSION }}
+            
+            Changes:
+            - Updated Cline submodule to tag v${{ steps.version-check.outputs.NEW_VERSION }}
+            - Updated package version to ${{ steps.version-check.outputs.NEW_VERSION }}
+            - Regenerated gRPC clients
+          branch: update/cline-${{ steps.version-check.outputs.NEW_VERSION }}

@@ -1,5 +1,9 @@
 # Cline gRPC Client for JavaScript/TypeScript
 
+[![npm version](https://img.shields.io/npm/v/cline-grpc-client-js.svg)](https://www.npmjs.com/package/cline-grpc-client-js)
+[![npm downloads](https://img.shields.io/npm/dm/cline-grpc-client-js.svg)](https://www.npmjs.com/package/cline-grpc-client-js)
+[![npm bundle size](https://img.shields.io/bundlephobia/min/cline-grpc-client-js)](https://bundlephobia.com/package/cline-grpc-client-js)
+
 TypeScript gRPC clients for Cline Core instances. This package provides strongly-typed gRPC clients for interacting with Cline's autonomous coding agent.
 
 ## Overview

@@ -8,3 +8,4 @@ packages/grpc-client/src/generated/
 .nyc_output
 .env
 .env.local
+tsconfig.tsbuildinfo
