@@ -1,0 +1,24 @@
+{
+  "name": "cline-js-client",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Cline JavaScript client ecosystem - gRPC clients and high-level wrapper",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r dev",
+    "test": "pnpm -r test",
+    "clean": "pnpm -r clean",
+    "lint": "pnpm -r lint",
+    "proto:build": "cd cline && npm run build:proto",
+    "install:all": "pnpm install && cd cline && npm install",
+    "prepare": "pnpm proto:build"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
+  },
+  "packageManager": "pnpm@9.0.0"
+}

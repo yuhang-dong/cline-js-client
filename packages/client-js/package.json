@@ -1,0 +1,43 @@
+{
+  "name": "cline-client-js",
+  "version": "0.1.0",
+  "description": "High-level JavaScript client for Cline AI coding assistant",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "lint": "echo 'Linting not configured yet'",
+    "test": "echo 'Testing not configured yet'"
+  },
+  "dependencies": {
+    "cline-grpc-client-js": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
+  },
+  "keywords": [
+    "cline",
+    "ai",
+    "coding",
+    "assistant",
+    "client",
+    "javascript",
+    "typescript"
+  ],
+  "author": "Cline JS Client Team",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-org/cline-js-client",
+    "directory": "packages/client-js"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
